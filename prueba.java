@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BerretaCoinTestsPropiosDatoComplejo {
 
@@ -125,4 +127,153 @@ public class BerretaCoinTestsPropiosDatoComplejo {
         assertEquals(1, sistema.maximoTenedor());
         assertEquals(0, sistema.txUltimoBloque().length);
     }
+
+    /* */
+@Test
+    public void HeapMaximaTransaccion(){
+    Berretacoin testcoin = new Berretacoin(4);
+
+    Transaccion[] transacciones = new Transaccion[]{
+            new Transaccion(0, 0, 1, 10),
+            new Transaccion(1, 1, 2, 2),
+            new Transaccion(2, 2, 3, 2),
+            new Transaccion(3, 1, 4, 3),
+            new Transaccion(4, 4, 1, 1),
+            new Transaccion(5, 1, 2, 5)};
+
+        testcoin.agregarBloque(transacciones);
+
+        Heap<Transaccion> heapTransacciones = new Heap<>();
+        List<Transaccion> listaTransacciones = new ArrayList<>(Arrays.asList(transacciones));
+        heapTransacciones.insertarDesdeLista(listaTransacciones);
+
+        Transaccion maximo = heapTransacciones.mostrarMaximo();
+        
+
+        assertEquals(testcoin.txMayorValorUltimoBloque(), new Transaccion(maximo.id(),maximo.id_comprador(),maximo.id_vendedor(),maximo.monto()));
+
+    }
+
+@Test
+    public void HeapExtraerMaximaTransaccion(){
+ Berretacoin testcoin = new Berretacoin(4);
+
+    Transaccion[] transacciones = new Transaccion[]{
+            new Transaccion(0, 0, 1, 1),
+            new Transaccion(1, 1, 2, 1),
+            new Transaccion(2, 2, 3, 1),
+            new Transaccion(3, 3, 4, 1),
+            new Transaccion(4, 4, 2, 1)};
+    testcoin.agregarBloque(transacciones);
+
+    Heap<Transaccion> heapTransacciones = new Heap<>();
+    List<Transaccion> listaTransacciones = new ArrayList<>(Arrays.asList(transacciones));
+    heapTransacciones.insertarDesdeLista(listaTransacciones);
+    Transaccion maximo1 = heapTransacciones.mostrarMaximo();
+
+    assertEquals(testcoin.txMayorValorUltimoBloque(), new Transaccion(maximo1.id(),maximo1.id_comprador(),maximo1.id_vendedor(),maximo1.monto()));
+    
+    testcoin.hackearTx();
+    heapTransacciones.extraerMaximo();
+    Transaccion maximo2 = heapTransacciones.mostrarMaximo();
+    assertEquals(testcoin.txMayorValorUltimoBloque(), new Transaccion(maximo2.id(),maximo2.id_comprador(),maximo2.id_vendedor(),maximo2.monto()));
+    
+    testcoin.hackearTx();
+    heapTransacciones.extraerMaximo();
+    Transaccion maximo3 = heapTransacciones.mostrarMaximo();
+    assertEquals(testcoin.txMayorValorUltimoBloque(), new Transaccion(maximo3.id(),maximo3.id_comprador(),maximo3.id_vendedor(),maximo3.monto()));
+    
+    testcoin.hackearTx();
+    heapTransacciones.extraerMaximo();
+    Transaccion maximo4 = heapTransacciones.mostrarMaximo();
+    assertEquals(testcoin.txMayorValorUltimoBloque(), new Transaccion(maximo4.id(),maximo4.id_comprador(),maximo4.id_vendedor(),maximo4.monto()));
+}
+
+
+@Test
+    public void HeapUsuarioMontoMostrarMaximo(){
+    Berretacoin testcoin = new Berretacoin(4);
+
+    Transaccion[] transacciones = new Transaccion[]{
+            new Transaccion(0, 0, 1, 10),
+            new Transaccion(1, 1, 2, 2),
+            new Transaccion(2, 2, 3, 2),
+            new Transaccion(3, 1, 4, 3),
+            new Transaccion(4, 4, 1, 1),
+            new Transaccion(5, 1, 2, 5)};
+
+        testcoin.agregarBloque(transacciones);
+
+        Heap<Usuario> usuariosPorMonto = new Heap<>();
+        List<Usuario> usuariosCargados = new ArrayList<>(); 
+
+        for (int i = 1; i <= 4; i++) { 
+                Usuario usuario = new Usuario(i, 0); 
+                usuariosCargados.add(usuario); 
+            }
+        List<Heap<Usuario>.HandleHeap> handles = usuariosPorMonto.insertarDesdeLista(usuariosCargados);
+        Heap<Usuario>.HandleHeap uno = handles.get(0);
+        Heap<Usuario>.HandleHeap dos = handles.get(1);
+        Heap<Usuario>.HandleHeap tres = handles.get(2);
+        Heap<Usuario>.HandleHeap cuatro = handles.get(3);   
+        usuariosCargados.get(0).setearMonto(1);
+        usuariosCargados.get(1).setearMonto(5);
+        usuariosCargados.get(2).setearMonto(2);
+        usuariosCargados.get(3).setearMonto(2);
+        usuariosPorMonto.editar(uno);
+        usuariosPorMonto.editar(dos);
+        usuariosPorMonto.editar(tres);   
+        usuariosPorMonto.editar(cuatro);    
+        assertEquals(testcoin.maximoTenedor(), usuariosPorMonto.mostrarMaximo().id());
+    }
+
+    /*Comparo  */
+    @Test
+        public void HeapUsuarioMontoMaximoVariante(){
+            Berretacoin testcoin = new Berretacoin(4);
+
+        Transaccion[] transacciones = new Transaccion[]{
+        new Transaccion(0, 0, 1, 1),
+        new Transaccion(1, 1, 2, 1),
+        new Transaccion(2, 2, 3, 1),
+        new Transaccion(3, 3, 4, 1),
+        new Transaccion(4, 4, 1, 1),
+        new Transaccion(5, 1, 2, 1)};
+        testcoin.agregarBloque(transacciones);
+        Heap<Usuario> usuariosPorMonto = new Heap<>();
+        List<Usuario> usuariosCargados = new ArrayList<>(); 
+
+        for (int i = 1; i <= 4; i++) { 
+                Usuario usuario = new Usuario(i, 0); 
+                usuariosCargados.add(usuario); 
+            }
+        List<Heap<Usuario>.HandleHeap> handles = usuariosPorMonto.insertarDesdeLista(usuariosCargados);
+        Heap<Usuario>.HandleHeap uno = handles.get(0);
+        Heap<Usuario>.HandleHeap dos = handles.get(1);
+        Heap<Usuario>.HandleHeap tres = handles.get(2);
+        Heap<Usuario>.HandleHeap cuatro = handles.get(3);
+        usuariosCargados.get(1).setearMonto(1);
+        usuariosPorMonto.editar(dos);
+        assertEquals(testcoin.maximoTenedor(), usuariosPorMonto.mostrarMaximo().id());
+
+        testcoin.hackearTx();
+        usuariosCargados.get(1).setearMonto(0);
+        usuariosCargados.get(0).setearMonto(1);
+        usuariosPorMonto.editar(uno);   
+        assertEquals(testcoin.maximoTenedor(), usuariosPorMonto.mostrarMaximo().id());
+
+        testcoin.hackearTx();
+        usuariosCargados.get(0).setearMonto(0);
+        usuariosCargados.get(3).setearMonto(1);
+        usuariosPorMonto.editar(dos);  
+        usuariosPorMonto.editar(cuatro); 
+        assertEquals(testcoin.maximoTenedor(), usuariosPorMonto.mostrarMaximo().id());
+
+        testcoin.hackearTx();
+        usuariosCargados.get(3).setearMonto(0);
+        usuariosCargados.get(2).setearMonto(1);
+        usuariosPorMonto.editar(tres);
+        assertEquals(testcoin.maximoTenedor(), usuariosPorMonto.mostrarMaximo().id());
+        }
+
 }
